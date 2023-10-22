@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  //sign user out
+  // Sign user out
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
@@ -31,7 +34,15 @@ class HomePage extends StatelessWidget {
     }
   }
 
-
+  @override
+  void initState() {
+    super.initState();
+    // Call the registerData function when the widget initializes
+    registerData().then((message) {
+      print("Registration result: $message");
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +53,11 @@ class HomePage extends StatelessWidget {
         )
       ]),
       body: Center(
-          child: Text(
-        "Logged in AS: " + user.email! + " " + user.uid,
-        style: TextStyle(fontSize: 20),
-      )),
+        child: Text(
+          "Logged in AS: " + user.email! + " " + user.uid,
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
     );
   }
 }
