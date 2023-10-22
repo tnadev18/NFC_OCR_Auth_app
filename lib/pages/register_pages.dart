@@ -19,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   final conformPasswordController = TextEditingController();
+  final userFirstnameController = TextEditingController();
 
   //sign user up
   void signUserUp() async {
@@ -95,15 +96,26 @@ class _RegisterPageState extends State<RegisterPage> {
                     fontSize: 16,
                   ),
                 ),
-
+                
                 const SizedBox(
                   height: 25,
                 ),
 
-                //username
+                //fisrt name and last name
+                MyTextField(
+                  controller: userFirstnameController,
+                  hintText: 'username',
+                  obscureText: false,
+                ),
+
+                const SizedBox(
+                  height: 10,
+                ),
+
+                //email
                 MyTextField(
                   controller: usernameController,
-                  hintText: 'username',
+                  hintText: 'Email',
                   obscureText: false,
                 ),
 

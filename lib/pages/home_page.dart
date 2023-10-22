@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
       ]),
       body: Center(
           child: Text(
-        "Logged in AS: " + user.email!,
+        "Logged in AS: " + user.email! +" "+user.uid,
         style: TextStyle(fontSize: 20),
       )),
     );
