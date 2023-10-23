@@ -18,7 +18,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addUserCard() {
-    AddUserCard();
+    {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) {
+          return AddUserCard(); // Navigate to the AddUserCard page
+        }),
+      );
+    }
   }
 
   Future<String> registerData() async {
@@ -102,19 +108,19 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return AddUserCard(); // Replace with the actual name of your OCR page
-            }),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.grey[600], // Change the FAB's background color
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation
-          .centerFloat, // Position the FAB at the bottom middle
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.of(context).push(
+      //       MaterialPageRoute(builder: (context) {
+      //         return; // Replace with the actual name of your OCR page
+      //       }),
+      //     );
+      //   },
+      //   child: Icon(Icons.add),
+      //   backgroundColor: Colors.grey[600], // Change the FAB's background color
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation
+      //     .centerFloat, // Position the FAB at the bottom middle
     );
   }
 }
