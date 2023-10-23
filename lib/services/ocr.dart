@@ -10,7 +10,6 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 class AddUserCard extends StatefulWidget {
   @override
   _AddUserCardState createState() => _AddUserCardState();

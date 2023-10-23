@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,14 +13,23 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   Map<String, dynamic> userData = {};
+  late Timer dataRefreshTimer;
 
   @override
   void initState() {
     super.initState();
     fetchUserData();
+    dataRefreshTimer = Timer.periodic(Duration(seconds: 1000), (Timer timer) {
+      fetchUserData(); // Fetch data periodically
+    });
     registerData().then((message) {
       print("Registration result: $message");
     });
+  }
+
+  Future<void> _refreshData() async {
+    // Call fetchUserData when refreshing
+    await fetchUserData();
   }
 
   Future<String> registerData() async {
@@ -61,6 +71,15 @@ class _HomePageState extends State<HomePage> {
       print("Error: $e");
     }
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Check if the current route is the home page and then fetch data
+    if (ModalRoute.of(context)?.settings.name == '/home_page') {
+      fetchUserData();
+    }
+  }
 
   void signUserOut() {
     FirebaseAuth.instance.signOut();
@@ -92,6 +111,7 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           child: Stack(
             children: <Widget>[
+              
               if (userData.isEmpty)
                 Container(
                   height: 230,
