@@ -84,6 +84,7 @@ class _AddUserCardState extends State<AddUserCard> {
       final company_name = data['data']['Company Name'];
       final Email = data['data']['Email'];
       final Phone = data['data']['Phone'];
+      final Name = data['data']['Name'];
 
       print("128" + message);
 
@@ -98,7 +99,11 @@ class _AddUserCardState extends State<AddUserCard> {
               imagePath: imageFile.path,
               // extractedText: message,
               address: address,
-              phone: Phone),
+              phone: Phone,
+              name: Name,
+              email: Email,
+              companyname: company_name,
+              ),
         ),
       );
     } catch (e) {
@@ -107,74 +112,12 @@ class _AddUserCardState extends State<AddUserCard> {
     }
   }
 
-  // Future<void> parsethetext(ImageSource source) async {
-  //   final pickedFile = await ImagePicker().getImage(source: source);
-  //   if (pickedFile == null) return;
-
-  //   try {
-  //     setState(() {
-  //       filepath = pickedFile.path;
-  //       parsedtext = 'OCR in progress...';
-  //     });
-
-  //     var bytes = File(pickedFile.path.toString()).readAsBytesSync();
-  //     String img64 = base64Encode(bytes);
-
-  //     var url = 'https://api.ocr.space/parse/image';
-  //     var payload = {
-  //       "base64Image": "data:image/jpg;base64,${img64.toString()}",
-  //       "language": "eng"
-  //     };
-  //     var header = {"apikey": "K86070579388957"};
-
-  //     var post =
-  //         await http.post(Uri.parse(url), body: payload, headers: header);
-  //     var result = jsonDecode(post.body);
-  //     var rawText = result['ParsedResults'][0]['ParsedText'];
-  //     String message = "";
-
-  //     if (rawText!) {
-  //       final url = Uri.parse(
-  //           'https://getcode-ndef-api.vercel.app/process_raw_data?raw_data=${rawText}');
-
-  //       try {
-  //         final response = await http.get(url);
-  //         if (response.statusCode == 200) {
-  //           final data = json.decode(response.body);
-  //           String message = data['data'];
-  //           print("128"+message);
-  //         } else {
-  //           print( "Failed to load data");
-  //         }
-  //       } catch (e) {
-  //         print( "Failed to load data: $e");
-  //       }
-  //     }
-
-  //     // Navigate to a new screen with the captured image and extracted text.
-  //     Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //         builder: (context) => CapturedScreen(
-  //           imagePath: pickedFile.path,
-  //           extractedText:"/*/*/*message",
-  //         ),
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     print('Error: $e');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     final isHorizontal =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('OCR APP'),
-      ),
       body: Stack(
         children: <Widget>[
           if (_cameraController.value.isInitialized)
@@ -242,11 +185,17 @@ class CapturedScreen extends StatefulWidget {
   final String imagePath;
   final String address;
   final String phone;
+  final String name;
+  final String email;
+  final String companyname;
 
   CapturedScreen({
     required this.imagePath,
     required this.address,
     required this.phone,
+    required this.name,
+    required this.email,
+    required this.companyname,
   });
 
   @override
@@ -256,6 +205,9 @@ class CapturedScreen extends StatefulWidget {
 class _CapturedScreenState extends State<CapturedScreen> {
   TextEditingController addressController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController companyNameController = TextEditingController();
 
   @override
   void initState() {
@@ -263,12 +215,18 @@ class _CapturedScreenState extends State<CapturedScreen> {
     // Set the initial values for the input fields using the variables
     addressController.text = widget.address;
     phoneController.text = widget.phone;
+    emailController.text = widget.email;
+    nameController.text = widget.name;
+    companyNameController.text = widget.companyname;
   }
 
   @override
   void dispose() {
     addressController.dispose();
     phoneController.dispose();
+    emailController.dispose();
+    companyNameController.dispose();
+    nameController.dispose();
     super.dispose();
   }
 
@@ -277,6 +235,12 @@ class _CapturedScreenState extends State<CapturedScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Captured Image and Text'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop(); // This will navigate back to the previous screen.
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -294,7 +258,7 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Input field for address
+            // Editable TextField for address
             TextFormField(
               controller: addressController,
               decoration: const InputDecoration(labelText: 'Address'),
@@ -303,10 +267,37 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Input field for phone
+            // Editable TextField for phone
             TextFormField(
               controller: phoneController,
               decoration: const InputDecoration(labelText: 'Phone'),
+              style: GoogleFonts.montserrat(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Editable TextField for email
+            TextFormField(
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              style: GoogleFonts.montserrat(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Editable TextField for name
+            TextFormField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Name'),
+              style: GoogleFonts.montserrat(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Editable TextField for company name
+            TextFormField(
+              controller: companyNameController,
+              decoration: const InputDecoration(labelText: 'Company Name'),
               style: GoogleFonts.montserrat(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -318,4 +309,3 @@ class _CapturedScreenState extends State<CapturedScreen> {
     );
   }
 }
-
