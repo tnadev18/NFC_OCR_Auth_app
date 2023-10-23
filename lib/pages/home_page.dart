@@ -17,9 +17,16 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
-  void addUserCard() {
-    print('hi');
-  }
+
+  void addUserCard(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) {
+      return AddUserCard(); // Instantiate the new page's widget
+    }),
+  );
+}
+
 
   Future<String> registerData() async {
     final url = Uri.parse(
