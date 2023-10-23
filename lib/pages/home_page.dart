@@ -17,6 +17,27 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchUserData();
+    registerData().then((message) {
+      print("Registration result: $message");
+    });
+  }
+
+  Future<String> registerData() async {
+    final url = Uri.parse(
+        'https://getcode-ndef-api.vercel.app/register_user?email=${user.email}&name=${user.displayName}&uid=${user.uid}&pic_url=${user.photoURL}');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String message = data['msg'];
+        return message;
+      } else {
+        return "Failed to load data";
+      }
+    } catch (e) {
+      return "Failed to load data: $e";
+    }
   }
 
   Future<void> fetchUserData() async {
@@ -148,6 +169,20 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-    ));
+    )
+    // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.of(context).push(
+      //       MaterialPageRoute(builder: (context) {
+      //         return; // Replace with the actual name of your OCR page
+      //       }),
+      //     );
+      //   },
+      //   child: Icon(Icons.add),
+      //   backgroundColor: Colors.grey[600], // Change the FAB's background color
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation
+      //     .centerFloat, // Position the FAB at the bottom middle
+    );
   }
 }
