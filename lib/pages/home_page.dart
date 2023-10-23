@@ -11,41 +11,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
+  Map<String, dynamic> userData = {};
 
-  // Sign user out
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
   }
 
-  void addUserCard() {
-    {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) {
-          return AddUserCard(); // Navigate to the AddUserCard page
-        }),
-      );
-    }
-  }
-
-  Future<String> registerData() async {
-    final url = Uri.parse(
-        'https://getcode-ndef-api.vercel.app/register_user?email=${user.email}&name=${user.displayName}&uid=${user.uid}&pic_url=${user.photoURL}');
-
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        String message = data['msg'];
-        return message;
-      } else {
-        return "Failed to load data";
-      }
-    } catch (e) {
-      return "Failed to load data: $e";
-    }
-  }
-
-  Future<Map<String, dynamic>> getuserdata() async {
+  Future<void> fetchUserData() async {
     final url = Uri.parse(
         'https://getcode-ndef-api.vercel.app/get_user_data?uid=${user.uid}');
 
@@ -54,96 +28,123 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final myCard = data['my_card'];
-        return myCard; // Return the JSON object
+        if (myCard != null) {
+          setState(() {
+            userData = myCard;
+          });
+        }
       } else {
-        // Handle the case where the response status code is not 200
-        throw Exception("Failed to load data");
+        print("Failed to load user data");
       }
     } catch (e) {
-      // Handle exceptions
-      throw Exception("Failed to load data: $e");
+      print("Error: $e");
     }
   }
 
-  @override
-  void initState() {
-    // Call the registerData function when the widget initializes
-    super.initState();
-    getuserdata().then((myCard) {
-      print("74 $myCard");
-    });
-    registerData().then((message) {
-      print("Registration result: $message");
-    });
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
+  void addUserCard() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) {
+        return AddUserCard();
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.grey[600], actions: [
-        IconButton(
-          onPressed: signUserOut,
-          icon: Icon(Icons.logout_outlined),
-        )
-      ]),
+      appBar: AppBar(
+        backgroundColor: Colors.grey[600],
+        actions: [
+          IconButton(
+            onPressed: signUserOut,
+            icon: Icon(Icons.logout_outlined),
+          )
+        ],
+      ),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: Container(
-            height: 230,
-            width: 1000,
-            decoration: BoxDecoration(
-                color: Colors.grey[350],
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(width: 2.0, color: Colors.white),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade500,
-                    offset: const Offset(4.0, 4.0),
-                    blurRadius: 15.0,
-                    spreadRadius: 1.0,
+          child: Stack(
+            children: <Widget>[
+              if (userData.isEmpty)
+                Container(
+                  height: 230,
+                  width: 1000,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 2.0, color: Colors.white),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade500,
+                        offset: const Offset(4.0, 4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      ),
+                      const BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(-4.0, -4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      ),
+                    ],
                   ),
-                  const BoxShadow(
-                    color: Colors.white,
-                    offset: Offset(-4.0, -4.0),
-                    blurRadius: 15.0,
-                    spreadRadius: 1.0,
-                  )
-                ]),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    // Replace Icon with IconButton
-                    onPressed: addUserCard,
-                    icon: const Icon(
-                      Icons.add,
-                      size: 40,
-                      color: Colors.black,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: addUserCard,
+                          icon: const Icon(
+                            Icons.add,
+                            size: 40,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Text('Scan your card'),
+                      ],
                     ),
                   ),
-                  const Text('Scan your card'),
-                ],
-              ),
-            ),
+                ),
+              if (userData.isNotEmpty)
+                Container(
+                  height: 230,
+                  width: 1000,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[350],
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 2.0, color: Colors.white),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade500,
+                        offset: const Offset(4.0, 4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      ),
+                      const BoxShadow(
+                        color: Colors.white,
+                        offset: Offset(-4.0, -4.0),
+                        blurRadius: 15.0,
+                        spreadRadius: 1.0,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text("Address: ${userData['Address'] ?? 'N/A'}"),
+                      Text("Company Name: ${userData['Company Name'] ?? 'N/A'}"),
+                      // Add more text widgets to display other card details
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context).push(
-      //       MaterialPageRoute(builder: (context) {
-      //         return; // Replace with the actual name of your OCR page
-      //       }),
-      //     );
-      //   },
-      //   child: Icon(Icons.add),
-      //   backgroundColor: Colors.grey[600], // Change the FAB's background color
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation
-      //     .centerFloat, // Position the FAB at the bottom middle
-    );
+    ));
   }
 }
