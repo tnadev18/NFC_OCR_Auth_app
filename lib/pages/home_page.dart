@@ -1,3 +1,4 @@
+import 'package:auth/services/ocr.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -38,14 +39,14 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // @override
-  // void initState() {
-  //   // Call the registerData function when the widget initializes
-  //   super.initState();
-  //   registerData().then((message) {
-  //     print("Registration result: $message");
-  //   });
-  // }
+  @override
+  void initState() {
+    // Call the registerData function when the widget initializes
+    super.initState();
+    registerData().then((message) {
+      print("Registration result: $message");
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +104,11 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add the action you want to perform when the FAB is pressed
+          Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) {
+        return AddUserCard(); // Replace with the actual name of your OCR page
+        }),
+          );
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.grey[600], // Change the FAB's background color
