@@ -16,6 +16,10 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
+  void addUserCard() {
+    print('hi');
+  }
+
   Future<String> registerData() async {
     final url = Uri.parse(
         'https://getcode-ndef-api.vercel.app/register_user?email=${user.email}&name=${user.displayName}&uid=${user.uid}&pic_url=${user.photoURL}');
@@ -54,57 +58,49 @@ class _HomePageState extends State<HomePage> {
       ]),
       backgroundColor: Colors.grey[300],
       body: SafeArea(
-        child:Padding(padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
-        child: Container(
-          height: 230,
-          width: 360,
-          decoration: BoxDecoration(
-              color: Colors.grey[350],
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(width: 2.0,color:Colors.white),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade500,
-                  offset: const Offset(4.0, 4.0),
-                  blurRadius: 15.0,
-                  spreadRadius: 1.0,
-                ),
-                const BoxShadow(
-                  color: Colors.white,
-                  offset: Offset(-4.0, -4.0),
-                  blurRadius: 15.0,
-                  spreadRadius: 1.0,
-                )
-              ]),
-              child: Center(
-                child: Text(
-                  'Add your card'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
+          child: Container(
+            height: 230,
+            width: 360,
+            decoration: BoxDecoration(
+                color: Colors.grey[350],
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(width: 2.0, color: Colors.white),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade500,
+                    offset: const Offset(4.0, 4.0),
+                    blurRadius: 15.0,
+                    spreadRadius: 1.0,
+                  ),
+                  const BoxShadow(
+                    color: Colors.white,
+                    offset: Offset(-4.0, -4.0),
+                    blurRadius: 15.0,
+                    spreadRadius: 1.0,
                   )
-              
+                ]),
+            child:  Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    // Replace Icon with IconButton
+                    onPressed: addUserCard,
+                    icon: const Icon(
+                      Icons.add,
+                      size: 40,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Text('Scan your card'),
+                ],
+              ),
+            ),
+          ),
         ),
-      ),),
+      ),
     );
   }
 }
-
-// I backgroundColor: Colors. grey [3001 ,
-// L body: Center(
-// I—child: Container(
-// height: 250,
-// width: 250,
-// decoration: BoxDecoration(
-// color: Colors.greyBøø] ,
-// borderRadius: BorderRadius. circular(15) ,
-// boxShadow: [
-// BoxShadow(
-// color: Colors. grey. shade5ØØ,
-// offset: Offset(4.Ø, 4.0),
-// blurRadius: 15.0,
-// spreadRadius: 1.0,
-// ) , // BoxShadow
-// BoxShadow(
-// color: Colors.éhitél,
-// offset: Offset(—4.Ø, —4.0),
-// blurRadius: 15.0,
-// spreadRadius: I.ø,
-// ) , // BoxShadow
