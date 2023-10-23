@@ -34,30 +34,77 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // Call the registerData function when the widget initializes
-    registerData().then((message) {
-      print("Registration result: $message");
-    });
-  }
-  
+  // @override
+  // void initState() {
+  //   // Call the registerData function when the widget initializes
+  //   super.initState();
+  //   registerData().then((message) {
+  //     print("Registration result: $message");
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: [
+      appBar: AppBar(backgroundColor: Colors.grey[600], actions: [
         IconButton(
           onPressed: signUserOut,
           icon: Icon(Icons.logout_outlined),
         )
       ]),
-      body: Center(
-        child: Text(
-          "Logged in AS: " + user.email! + " " + user.uid,
-          style: TextStyle(fontSize: 20),
+      backgroundColor: Colors.grey[300],
+      body: SafeArea(
+        child:Padding(padding: const EdgeInsets.fromLTRB(15, 20, 15, 15),
+        child: Container(
+          height: 230,
+          width: 360,
+          decoration: BoxDecoration(
+              color: Colors.grey[350],
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(width: 2.0,color:Colors.white),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.shade500,
+                  offset: const Offset(4.0, 4.0),
+                  blurRadius: 15.0,
+                  spreadRadius: 1.0,
+                ),
+                const BoxShadow(
+                  color: Colors.white,
+                  offset: Offset(-4.0, -4.0),
+                  blurRadius: 15.0,
+                  spreadRadius: 1.0,
+                )
+              ]),
+              child: Center(
+                child: Text(
+                  'Add your card'),
+                  )
+              
         ),
-      ),
+      ),),
     );
   }
 }
+
+// I backgroundColor: Colors. grey [3001 ,
+// L body: Center(
+// I—child: Container(
+// height: 250,
+// width: 250,
+// decoration: BoxDecoration(
+// color: Colors.greyBøø] ,
+// borderRadius: BorderRadius. circular(15) ,
+// boxShadow: [
+// BoxShadow(
+// color: Colors. grey. shade5ØØ,
+// offset: Offset(4.Ø, 4.0),
+// blurRadius: 15.0,
+// spreadRadius: 1.0,
+// ) , // BoxShadow
+// BoxShadow(
+// color: Colors.éhitél,
+// offset: Offset(—4.Ø, —4.0),
+// blurRadius: 15.0,
+// spreadRadius: I.ø,
+// ) , // BoxShadow
