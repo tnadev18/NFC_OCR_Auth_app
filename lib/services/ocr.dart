@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class AddUserCard extends StatefulWidget {
   @override
@@ -316,31 +318,66 @@ class _CapturedScreenState extends State<CapturedScreen> {
     );
   }
   // Function to save data to the API
-  void saveDataToAPI() async {
+  // Function to save data to the API
+void saveDataToAPI() async {
   final user = FirebaseAuth.instance.currentUser!;
-    // Prepare the data to send
-    final data = {
-      "uid": user.uid,
-      "my_card": {
-        "Address": addressController.text,
-        "Company Name": companyNameController.text,
-        "Email": emailController.text,
-        "Name": nameController.text,
-        "Phone": phoneController.text,
-      },
-    };
+  // Prepare the data to send
+  final data = {
+    "uid": user.uid,
+    "my_card": {
+      "Address": addressController.text,
+      "Company Name": companyNameController.text,
+      "Email": emailController.text,
+      "Name": nameController.text,
+      "Phone": phoneController.text,
+    },
+  };
 
-    // TODO: Make an HTTP POST request to the API with the 'data'
-    // Example:
+  try {
+    // Make an HTTP POST request to the API
     final response = await http.post(
       Uri.parse('https://getcode-ndef-api.vercel.app/set_my_card'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(data),
     );
 
-    // You should handle the API response here.
-    // For now, you can print the response to the console.
-    print('API Response: ${response.body}');
+    // Check the status code of the response
+    if (response.statusCode == 200) {
+      // Data updated successfully
+      Fluttertoast.showToast(
+        msg: "Data updated successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else {
+      // Error while updating data
+      Fluttertoast.showToast(
+        msg: "Error updating data. Please try again.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  } catch (e) {
+    // Exception or error while making the API request
+    Fluttertoast.showToast(
+      msg: "An error occurred: $e",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
+}
+
 }
 
