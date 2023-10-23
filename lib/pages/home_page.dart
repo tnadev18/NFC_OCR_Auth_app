@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           child: Container(
             height: 230,
             width: 1000,
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                     spreadRadius: 1.0,
                   )
                 ]),
-            child:  Center(
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -100,8 +100,16 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add the action you want to perform when the FAB is pressed
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.grey[600], // Change the FAB's background color
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation
+          .centerFloat, // Position the FAB at the bottom middle
     );
   }
 }
