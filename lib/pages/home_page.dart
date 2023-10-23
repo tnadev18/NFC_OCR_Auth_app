@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
           child: Container(
             height: 230,
-            width: 360,
+            width: 1000,
             decoration: BoxDecoration(
                 color: Colors.grey[350],
                 borderRadius: BorderRadius.circular(15),
@@ -100,6 +100,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+
       ),
     );
   }
