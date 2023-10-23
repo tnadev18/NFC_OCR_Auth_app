@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddUserCard extends StatefulWidget {
   @override
@@ -17,6 +18,8 @@ class _AddUserCardState extends State<AddUserCard> {
   String parsedtext = '';
   String filepath = '';
   late CameraController _cameraController;
+  // final user = FirebaseAuth.instance.currentUser!;
+
 
   @override
   void initState() {
@@ -258,7 +261,7 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Editable TextField for address
+            // Input field for address
             TextFormField(
               controller: addressController,
               decoration: const InputDecoration(labelText: 'Address'),
@@ -267,7 +270,7 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Editable TextField for phone
+            // Input field for phone
             TextFormField(
               controller: phoneController,
               decoration: const InputDecoration(labelText: 'Phone'),
@@ -276,7 +279,6 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Editable TextField for email
             TextFormField(
               controller: emailController,
               decoration: const InputDecoration(labelText: 'Email'),
@@ -285,7 +287,6 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Editable TextField for name
             TextFormField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Name'),
@@ -294,7 +295,6 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Editable TextField for company name
             TextFormField(
               controller: companyNameController,
               decoration: const InputDecoration(labelText: 'Company Name'),
@@ -303,9 +303,44 @@ class _CapturedScreenState extends State<CapturedScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            ElevatedButton(
+              onPressed: () {
+                // TODO: Implement the API call to save the data
+                saveDataToAPI();
+              },
+              child: Text('Save'),
+            ),
           ],
         ),
       ),
     );
   }
+  // Function to save data to the API
+  void saveDataToAPI() async {
+  final user = FirebaseAuth.instance.currentUser!;
+    // Prepare the data to send
+    final data = {
+      "uid": user.uid,
+      "my_card": {
+        "Address": addressController.text,
+        "Company Name": companyNameController.text,
+        "Email": emailController.text,
+        "Name": nameController.text,
+        "Phone": phoneController.text,
+      },
+    };
+
+    // TODO: Make an HTTP POST request to the API with the 'data'
+    // Example:
+    final response = await http.post(
+      Uri.parse('https://getcode-ndef-api.vercel.app/set_my_card'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(data),
+    );
+
+    // You should handle the API response here.
+    // For now, you can print the response to the console.
+    print('API Response: ${response.body}');
+  }
 }
+
