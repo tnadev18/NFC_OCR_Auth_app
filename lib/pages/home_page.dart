@@ -137,6 +137,9 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       Text("Address: ${userData['Address'] ?? 'N/A'}"),
+                      Text("Name: ${userData['Name'] ?? 'N/A'}"),
+                      Text("Email: ${userData['Email'] ?? 'N/A'}"),
+                      Text("Phone: ${userData['Phone'] ?? 'N/A'}"),
                       Text("Company Name: ${userData['Company Name'] ?? 'N/A'}"),
                       // Add more text widgets to display other card details
                     ],
