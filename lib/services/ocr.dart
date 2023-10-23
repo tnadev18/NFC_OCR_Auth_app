@@ -90,12 +90,13 @@ class _AddUserCardState extends State<AddUserCard> {
       Navigator.pop(context); // Close the loader
 
       // Navigate to a new screen with the captured image and extracted text.
+      // ignore: use_build_context_synchronously
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => CapturedScreen(
               imagePath: imageFile.path,
-              extractedText: message,
+              // extractedText: message,
               address: address,
               phone: Phone),
         ),
@@ -237,17 +238,39 @@ class _AddUserCardState extends State<AddUserCard> {
   }
 }
 
-class CapturedScreen extends StatelessWidget {
+class CapturedScreen extends StatefulWidget {
   final String imagePath;
-  final String extractedText;
   final String address;
   final String phone;
 
-  CapturedScreen(
-      {required this.imagePath,
-      required this.extractedText,
-      required this.address,
-      required this.phone});
+  CapturedScreen({
+    required this.imagePath,
+    required this.address,
+    required this.phone,
+  });
+
+  @override
+  _CapturedScreenState createState() => _CapturedScreenState();
+}
+
+class _CapturedScreenState extends State<CapturedScreen> {
+  TextEditingController addressController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Set the initial values for the input fields using the variables
+    addressController.text = widget.address;
+    phoneController.text = widget.phone;
+  }
+
+  @override
+  void dispose() {
+    addressController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +285,7 @@ class CapturedScreen extends StatelessWidget {
               width: 400,
               height: 400,
               margin: EdgeInsets.all(10.0),
-              child: Image.file(File(imagePath), fit: BoxFit.cover),
+              child: Image.file(File(widget.imagePath), fit: BoxFit.cover),
             ),
             Text(
               "The extracted text is",
@@ -271,9 +294,19 @@ class CapturedScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
-              "Address : " + address + "\n Phone : " + phone,
-              // "Phone : " + phone,
+            // Input field for address
+            TextFormField(
+              controller: addressController,
+              decoration: const InputDecoration(labelText: 'Address'),
+              style: GoogleFonts.montserrat(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // Input field for phone
+            TextFormField(
+              controller: phoneController,
+              decoration: const InputDecoration(labelText: 'Phone'),
               style: GoogleFonts.montserrat(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -285,3 +318,4 @@ class CapturedScreen extends StatelessWidget {
     );
   }
 }
+
