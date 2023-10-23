@@ -1,3 +1,4 @@
+// import 'dart:js_util';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -67,8 +68,24 @@ class _AddUserCardState extends State<AddUserCard> {
       };
       var header = {"apikey": "K86070579388957"};
 
-      var post = await http.post(Uri.parse(url), body: payload, headers: header);
+      var post =
+          await http.post(Uri.parse(url), body: payload, headers: header);
       var result = jsonDecode(post.body);
+      var rawText = result['ParsedResults'][0]['ParsedText'];
+
+      final url1 = Uri.parse(
+          'https://getcode-ndef-api.vercel.app/process_raw_data?raw_data=${rawText}');
+
+      final response = await http.get(url1);
+
+      final data = json.decode(response.body);
+      String message = data['data'].toString();
+      final address = data['data']['Address'];
+      final company_name = data['data']['Company Name'];
+      final Email = data['data']['Email'];
+      final Phone = data['data']['Phone'];
+
+      print("128" + message);
 
       Navigator.pop(context); // Close the loader
 
@@ -77,58 +94,81 @@ class _AddUserCardState extends State<AddUserCard> {
         context,
         MaterialPageRoute(
           builder: (context) => CapturedScreen(
-            imagePath: imageFile.path,
-            extractedText: result['ParsedResults'][0]['ParsedText'],
-          ),
+              imagePath: imageFile.path,
+              extractedText: message,
+              address: address,
+              phone: Phone),
         ),
       );
     } catch (e) {
       Navigator.pop(context); // Close the loader
-      print('Error: $e');
+      print('103 Error: $e');
     }
   }
 
-  Future<void> parsethetext(ImageSource source) async {
-    final pickedFile = await ImagePicker().getImage(source: source);
-    if (pickedFile == null) return;
+  // Future<void> parsethetext(ImageSource source) async {
+  //   final pickedFile = await ImagePicker().getImage(source: source);
+  //   if (pickedFile == null) return;
 
-    try {
-      setState(() {
-        filepath = pickedFile.path;
-        parsedtext = 'OCR in progress...';
-      });
+  //   try {
+  //     setState(() {
+  //       filepath = pickedFile.path;
+  //       parsedtext = 'OCR in progress...';
+  //     });
 
-      var bytes = File(pickedFile.path.toString()).readAsBytesSync();
-      String img64 = base64Encode(bytes);
+  //     var bytes = File(pickedFile.path.toString()).readAsBytesSync();
+  //     String img64 = base64Encode(bytes);
 
-      var url = 'https://api.ocr.space/parse/image';
-      var payload = {
-        "base64Image": "data:image/jpg;base64,${img64.toString()}",
-        "language": "eng"
-      };
-      var header = {"apikey": "K86070579388957"};
+  //     var url = 'https://api.ocr.space/parse/image';
+  //     var payload = {
+  //       "base64Image": "data:image/jpg;base64,${img64.toString()}",
+  //       "language": "eng"
+  //     };
+  //     var header = {"apikey": "K86070579388957"};
 
-      var post = await http.post(Uri.parse(url), body: payload, headers: header);
-      var result = jsonDecode(post.body);
+  //     var post =
+  //         await http.post(Uri.parse(url), body: payload, headers: header);
+  //     var result = jsonDecode(post.body);
+  //     var rawText = result['ParsedResults'][0]['ParsedText'];
+  //     String message = "";
 
-      // Navigate to a new screen with the captured image and extracted text.
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CapturedScreen(
-            imagePath: pickedFile.path,
-            extractedText: result['ParsedResults'][0]['ParsedText'],
-          ),
-        ),
-      );
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
+  //     if (rawText!) {
+  //       final url = Uri.parse(
+  //           'https://getcode-ndef-api.vercel.app/process_raw_data?raw_data=${rawText}');
+
+  //       try {
+  //         final response = await http.get(url);
+  //         if (response.statusCode == 200) {
+  //           final data = json.decode(response.body);
+  //           String message = data['data'];
+  //           print("128"+message);
+  //         } else {
+  //           print( "Failed to load data");
+  //         }
+  //       } catch (e) {
+  //         print( "Failed to load data: $e");
+  //       }
+  //     }
+
+  //     // Navigate to a new screen with the captured image and extracted text.
+  //     Navigator.push(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => CapturedScreen(
+  //           imagePath: pickedFile.path,
+  //           extractedText:"/*/*/*message",
+  //         ),
+  //       ),
+  //     );
+  //   } catch (e) {
+  //     print('Error: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    final isHorizontal = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isHorizontal =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
@@ -144,23 +184,22 @@ class _AddUserCardState extends State<AddUserCard> {
               ),
             ),
           Positioned(
-          bottom: 30,
-          left: 0, // Centered horizontally
-          right: 0, // Centered horizontally
-          child: IconButton(
-            onPressed: () {
-              if (parsedtext.isEmpty) {
-                if (_cameraController.value.isTakingPicture) {
-                  return;
+            bottom: 30,
+            left: 0, // Centered horizontally
+            right: 0, // Centered horizontally
+            child: IconButton(
+              onPressed: () {
+                if (parsedtext.isEmpty) {
+                  if (_cameraController.value.isTakingPicture) {
+                    return;
+                  }
+                  captureImageAndPerformOCR();
                 }
-                captureImageAndPerformOCR();
-              }
-            },
-            icon: Icon(Icons.camera_alt_sharp, size: 48),
-            color: Colors.white,
+              },
+              icon: Icon(Icons.camera_alt_sharp, size: 48),
+              color: Colors.white,
+            ),
           ),
-        ),
-
           if (parsedtext.isNotEmpty)
             Container(
               width: 200,
@@ -201,8 +240,14 @@ class _AddUserCardState extends State<AddUserCard> {
 class CapturedScreen extends StatelessWidget {
   final String imagePath;
   final String extractedText;
+  final String address;
+  final String phone;
 
-  CapturedScreen({required this.imagePath, required this.extractedText});
+  CapturedScreen(
+      {required this.imagePath,
+      required this.extractedText,
+      required this.address,
+      required this.phone});
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +272,8 @@ class CapturedScreen extends StatelessWidget {
               ),
             ),
             Text(
-              extractedText,
+              "Address : " + address + "\n Phone : " + phone,
+              // "Phone : " + phone,
               style: GoogleFonts.montserrat(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
