@@ -17,16 +17,9 @@ class _HomePageState extends State<HomePage> {
     FirebaseAuth.instance.signOut();
   }
 
-
-  void addUserCard(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) {
-      return AddUserCard(); // Instantiate the new page's widget
-    }),
-  );
-}
-
+  void addUserCard() {
+    AddUserCard();
+  }
 
   Future<String> registerData() async {
     final url = Uri.parse(
@@ -112,9 +105,9 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) {
-        return AddUserCard(); // Replace with the actual name of your OCR page
-        }),
+            MaterialPageRoute(builder: (context) {
+              return AddUserCard(); // Replace with the actual name of your OCR page
+            }),
           );
         },
         child: Icon(Icons.add),
