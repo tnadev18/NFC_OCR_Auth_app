@@ -45,10 +45,33 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<Map<String, dynamic>> getuserdata() async {
+    final url = Uri.parse(
+        'https://getcode-ndef-api.vercel.app/get_user_data?uid=${user.uid}');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final myCard = data['my_card'];
+        return myCard; // Return the JSON object
+      } else {
+        // Handle the case where the response status code is not 200
+        throw Exception("Failed to load data");
+      }
+    } catch (e) {
+      // Handle exceptions
+      throw Exception("Failed to load data: $e");
+    }
+  }
+
   @override
   void initState() {
     // Call the registerData function when the widget initializes
     super.initState();
+    getuserdata().then((myCard) {
+      print("74 $myCard");
+    });
     registerData().then((message) {
       print("Registration result: $message");
     });
