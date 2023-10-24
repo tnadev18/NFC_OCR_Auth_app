@@ -1,6 +1,7 @@
 // import 'dart:js_util';
 import 'package:auth/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,7 +22,6 @@ class _AddUserCardState extends State<AddUserCard> {
   String filepath = '';
   late CameraController _cameraController;
   // final user = FirebaseAuth.instance.currentUser!;
-
 
   @override
   void initState() {
@@ -91,7 +91,7 @@ class _AddUserCardState extends State<AddUserCard> {
       final Phone = data['data']['Phone'];
       final Name = data['data']['Name'];
 
-      print("128" + message);
+      print("94" + message);
 
       Navigator.pop(context); // Close the loader
 
@@ -101,19 +101,19 @@ class _AddUserCardState extends State<AddUserCard> {
         context,
         MaterialPageRoute(
           builder: (context) => CapturedScreen(
-              imagePath: imageFile.path,
-              // extractedText: message,
-              address: address,
-              phone: Phone,
-              name: Name,
-              email: Email,
-              companyname: company_name,
-              ),
+            imagePath: imageFile.path,
+            // extractedText: message,
+            address: address,
+            phone: Phone,
+            name: Name,
+            email: Email,
+            companyname: company_name,
+          ),
         ),
       );
     } catch (e) {
       Navigator.pop(context); // Close the loader
-      print('103 Error: $e');
+      print('116 Error: $e');
     }
   }
 
@@ -243,7 +243,8 @@ class _CapturedScreenState extends State<CapturedScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pop(); // This will navigate back to the previous screen.
+            Navigator.of(context)
+                .pop(); // This will navigate back to the previous screen.
           },
         ),
       ),
@@ -257,107 +258,172 @@ class _CapturedScreenState extends State<CapturedScreen> {
               child: Image.file(File(widget.imagePath), fit: BoxFit.cover),
             ),
             Text(
-              "The extracted text is",
+              "Please Check your info and fill the form below ",
               style: GoogleFonts.montserrat(
-                fontSize: 20,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // Input field for address
-            TextFormField(
-              controller: addressController,
-              decoration: const InputDecoration(labelText: 'Address'),
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+            Container(
+              margin: EdgeInsets.all(10.0),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                children: [
+                  TextFormField(
+                    maxLength: 32,
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                    ),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    maxLength: 10,
+                    controller: phoneController,
+                    decoration: const InputDecoration(labelText: 'Phone'),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  TextFormField(
+                    maxLength: 32,
+                    controller: companyNameController,
+                    decoration:
+                        const InputDecoration(labelText: 'Company Name'),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    maxLength: 32,
+                    controller: emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    inputFormatters: [
+                      FilteringTextInputFormatter
+                          .singleLineFormatter, // Allow a single line
+                    ],
+                    validator: (value) {
+                      if (value == null || !value.contains('@')) {
+                        return 'Enter a valid email address';
+                      }
+                      return null;
+                    },
+                    style: GoogleFonts.montserrat(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 5.0,
+                  ),
+                  // Input field for address
+                  TextFormField(
+                    maxLength: 50,
+                    controller: addressController,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    style: GoogleFonts.montserrat(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
-            // Input field for phone
-            TextFormField(
-              controller: phoneController,
-              decoration: const InputDecoration(labelText: 'Phone'),
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextFormField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextFormField(
-              controller: companyNameController,
-              decoration: const InputDecoration(labelText: 'Company Name'),
-              style: GoogleFonts.montserrat(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
+            const SizedBox(
+              height: 10.0,
             ),
             ElevatedButton(
               onPressed: () {
                 // TODO: Implement the API call to save the data
                 saveDataToAPI();
               },
-              child: Text('Save'),
+              child: Text(
+                'Save',
+                style: TextStyle(fontSize: 20),
+              ),
+              style: ElevatedButton.styleFrom(
+                  minimumSize: Size(100, 60),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0))),
+            ),
+            const SizedBox(
+              height: 10.0,
             ),
           ],
         ),
       ),
     );
   }
+
   // Function to save data to the API
   // Function to save data to the API
-void saveDataToAPI() async {
-  final user = FirebaseAuth.instance.currentUser!;
-  // Prepare the data to send
-  final data = {
-    "uid": user.uid,
-    "my_card": {
-      "Address": addressController.text,
-      "Company Name": companyNameController.text,
-      "Email": emailController.text,
-      "Name": nameController.text,
-      "Phone": phoneController.text,
-      "pic_url": user.photoURL,
-    },
-  };
+  void saveDataToAPI() async {
+    final user = FirebaseAuth.instance.currentUser!;
+    // Prepare the data to send
+    final data = {
+      "uid": user.uid,
+      "my_card": {
+        "Address": addressController.text,
+        "Company Name": companyNameController.text,
+        "Email": emailController.text,
+        "Name": nameController.text,
+        "Phone": phoneController.text,
+        "pic_url": user.photoURL,
+      },
+    };
 
-  try {
-    // Make an HTTP POST request to the API
-    final response = await http.post(
-      Uri.parse('https://getcode-ndef-api.vercel.app/set_my_card'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(data),
-    );
-
-    // Check the status code of the response
-    if (response.statusCode == 200) {
-      // Data updated successfully
-      Fluttertoast.showToast(
-        msg: "Data updated successfully",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
+    try {
+      // Make an HTTP POST request to the API
+      final response = await http.post(
+        Uri.parse('https://getcode-ndef-api.vercel.app/set_my_card'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(data),
       );
-    } else {
-      // Error while updating data
+
+      // Check the status code of the response
+      if (response.statusCode == 200) {
+        // Data updated successfully
+        Fluttertoast.showToast(
+          msg: "Data updated successfully",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        // Error while updating data
+        Fluttertoast.showToast(
+          msg: "Error updating data. Please try again.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } catch (e) {
+      // Exception or error while making the API request
       Fluttertoast.showToast(
-        msg: "Error updating data. Please try again.",
+        msg: "An error occurred: $e",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
@@ -366,19 +432,10 @@ void saveDataToAPI() async {
         fontSize: 16.0,
       );
     }
-  } catch (e) {
-    // Exception or error while making the API request
-    Fluttertoast.showToast(
-      msg: "An error occurred: $e",
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
+    Navigator.of(context).pop(
+      MaterialPageRoute(builder: (context) {
+        return HomePage();
+      }),
     );
   }
 }
-
-}
-

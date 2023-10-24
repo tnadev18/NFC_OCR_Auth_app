@@ -8,8 +8,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:auth/services/nfc.dart';
 
-// import 'package:image/image.dart';
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -99,221 +97,250 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.grey[600],
-          actions: [
-            IconButton(
-              onPressed: signUserOut,
-              icon: Icon(Icons.logout_outlined),
-            )
-          ],
-        ),
-        backgroundColor: Colors.grey[300],
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            child: Stack(
-              children: <Widget>[
-                if (userData.isEmpty)
-                  Container(
-                    height: 230,
-                    width: 1000,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[350],
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(width: 2.0, color: Colors.white),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade500,
-                          offset: const Offset(4.0, 4.0),
-                          blurRadius: 15.0,
-                          spreadRadius: 1.0,
-                        ),
-                        const BoxShadow(
-                          color: Colors.white,
-                          offset: Offset(-4.0, -4.0),
-                          blurRadius: 15.0,
-                          spreadRadius: 1.0,
-                        ),
-                      ],
+  Widget _buildUserData() {
+    return Container(
+      height: 230,
+      width: 1000,
+      decoration: BoxDecoration(
+        color: Colors.grey[350],
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(width: 2.0, color: Colors.white),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade500,
+            offset: const Offset(4.0, 4.0),
+            blurRadius: 15.0,
+            spreadRadius: 1.0,
+          ),
+          const BoxShadow(
+            color: Colors.white,
+            offset: Offset(-4.0, -4.0),
+            blurRadius: 15.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            if (userData.isEmpty)
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 70),
+                child: Column(
+                  children: [
+                    IconButton(
+                      onPressed: addUserCard,
+                      icon: const Icon(
+                        Icons.add,
+                        size: 40,
+                        color: Colors.black,
+                      ),
                     ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: addUserCard,
-                            icon: const Icon(
-                              Icons.add,
-                              size: 40,
-                              color: Colors.black,
+                    const Text('Scan your card'),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: ClipOval(
+                          child: Image.network(
+                            '${user.photoURL}',
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'lib/images/default_avatar.png',
+                                height: 40,
+                              );
+                            },
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 30,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            alignment: Alignment.topRight,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    " ${userData['Name'] ?? 'N/A'}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: userData['Name'] != null
+                                          ? userData['Name'].length > 12
+                                              ? 24
+                                              : 32
+                                          : 32,
+                                    ),
+                                  ),
+                                ),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    " ${userData['Company Name'] ?? 'N/A'}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: userData['Company Name'] != null
+                                          ? userData['Company Name'].length > 30
+                                              ? 14
+                                              : 18
+                                          : 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const Text('Scan your card'),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                if (userData.isNotEmpty)
                   Container(
-                      height: 230,
-                      width: 1000,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[350],
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(width: 2.0, color: Colors.white),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade500,
-                            offset: const Offset(4.0, 4.0),
-                            blurRadius: 15.0,
-                            spreadRadius: 1.0,
-                          ),
-                          const BoxShadow(
-                            color: Colors.white,
-                            offset: Offset(-4.0, -4.0),
-                            blurRadius: 15.0,
-                            spreadRadius: 1.0,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
+                    margin: EdgeInsets.only(top: 55, left: 10),
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: ClipOval(
-                                  child: Image.network(
-                                '${user.photoURL}',
-                                height: 40,
-                                errorBuilder: (context,error,stackTrace)
-                                {
-                                  return Image.asset('lib/images/default_avatar.png',height: 40,);
-                                },
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              )),
+                            const Icon(
+                              Icons.call,
+                              size: 20,
                             ),
-
-                            const SizedBox(width: 60,),
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                alignment: Alignment.topRight,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(" ${userData['Name'] ?? 'N/A'}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 32)),
-                                    Text(
-                                        " ${userData['Company Name'] ?? 'N/A'}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18)),
-                                  ],
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                " ${userData['Phone'] ?? 'N/A'}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: userData['Phone'] != null
+                                      ? userData['Phone'].length > 12
+                                          ? 17
+                                          : 17
+                                      : 20,
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        Container(
-                          margin: EdgeInsets.only(top: 45, left: 10),
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.call,
-                                    size: 20,
-                                  ),
-                                  Text(
-                                    " ${userData['Phone'] ?? 'N/A'}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                        const SizedBox(
+                          height: 3,
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.email_outlined,
+                              size: 20,
+                            ),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                " ${userData['Email'] ?? 'N/A'}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: userData['Email'] != null
+                                      ? userData['Email'].length > 12
+                                          ? 17
+                                          : 17
+                                      : 20,
+                                ),
                               ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.email_outlined,
-                                    size: 20,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 3,
+                        ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 20,
+                            ),
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  " ${userData['Address'] ?? 'N/A'}",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: userData['Address'] != null
+                                        ? userData['Address'].length > 30
+                                            ? 17
+                                            : 17
+                                        : 20,
                                   ),
-                                  Text(
-                                    " ${userData['Email'] ?? 'N/A'}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                                ),
                               ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.location_on_outlined,
-                                    size: 20,
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      " ${userData['Address'] ?? 'N/A'}",
-                                      softWrap: true,
-                                      overflow: TextOverflow
-                                          .ellipsis, // Specify how to handle overflow
-                                      maxLines: 2,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
-                      ])),
-                // Add more text widgets to display other card details
-              ],
-            ),
-          ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) {
-                return Nfc(); // Replace with the actual name of your OCR page
-              }),
-            );
-          },
-          child: Icon(Icons.add),
-          backgroundColor: Colors.grey[600], // Change the FAB's background color
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey[600],
+        actions: [
+          IconButton(
+            onPressed: signUserOut,
+            icon: Icon(Icons.logout_outlined),
+          )
+        ],
+      ),
+      backgroundColor: Colors.grey[300],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+          child: _buildUserData(),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation
-            .centerFloat, // Position the FAB at the bottom middle
-        );
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) {
+              return Nfc(); // Replace with the actual name of your NFC page
+            }),
+          );
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.grey[600], // Change the FAB's background color
+      ),
+    );
   }
 }
