@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final user = FirebaseAuth.instance.currentUser!;
   Map<String, dynamic> userData = {};
+  List<dynamic> recivedData = [];
   late Timer dataRefreshTimer;
 
   @override
@@ -62,10 +63,11 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final myCard = data['my_card'];
-        final recivedCards = data[''];
-        if (myCard != null) {
+        List<dynamic> recivedCards = data['shared_cards'];
+        if (myCard != null || recivedCards != null) {
           setState(() {
             userData = myCard;
+            recivedData = recivedCards;
           });
         }
       } else {
@@ -311,6 +313,23 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _recivedCardsList() {
+    return ListView.builder(
+    itemCount: recivedData.length,
+    itemBuilder: (context, index) {
+      final cardData = recivedData[index];
+      return ListTile(
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(cardData['pic_url']),
+        ),
+        title: Text(cardData['Name']),
+        subtitle: Text(cardData['Company Name']),
+        // Add more details here if needed
+      );
+    },
+  );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -327,7 +346,23 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-          child: _buildUserData(),
+          child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildUserData(), // Display user data
+            const SizedBox(height: 20), // Add spacing between user data and received cards
+            const Text(
+              'Received Cards',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Expanded(
+              child: _recivedCardsList(), // Display the received cards list
+            ),
+          ],
+        ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
