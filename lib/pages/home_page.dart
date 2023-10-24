@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:auth/services/nfc.dart';
 
 // import 'package:image/image.dart';
 
@@ -299,20 +300,20 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-        )
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {
-        //     Navigator.of(context).push(
-        //       MaterialPageRoute(builder: (context) {
-        //         return; // Replace with the actual name of your OCR page
-        //       }),
-        //     );
-        //   },
-        //   child: Icon(Icons.add),
-        //   backgroundColor: Colors.grey[600], // Change the FAB's background color
-        // ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation
-        //     .centerFloat, // Position the FAB at the bottom middle
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) {
+                return Nfc(); // Replace with the actual name of your OCR page
+              }),
+            );
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.grey[600], // Change the FAB's background color
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation
+            .centerFloat, // Position the FAB at the bottom middle
         );
   }
 }
