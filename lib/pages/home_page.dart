@@ -183,32 +183,21 @@ class _HomePageState extends State<HomePage> {
                         children: [
                         Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: ClipOval(
-                                  child: Image.network(
-                                '${user.photoURL}',
-                                height: 40,
-                                errorBuilder: (context,error,stackTrace)
-                                {
-                                  return Image.asset('lib/images/default_avatar.png',height: 40,);
-                                },
-                                loadingBuilder: (BuildContext context,
-                                    Widget child,
-                                    ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null) return child;
+                            Container(
+                              child:Image.network(
+                                '${userData['pic_Url'] ?? 'N/A'}',height: 40,
+                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null)
+                                    return child;
                                   return Center(
                                     child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes !=
-                                              null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress.expectedTotalBytes!
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                                           : null,
                                     ),
                                   );
                                 },
-                              )),
+                              )
                             ),
 
                             const SizedBox(width: 60,),
@@ -220,14 +209,10 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(" ${userData['Name'] ?? 'N/A'}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 32)),
-                                    Text(
-                                        " ${userData['Company Name'] ?? 'N/A'}",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18)),
+                                    style: TextStyle(fontWeight: FontWeight.w700,fontSize: 32)),
+                                    Divider(thickness: 2),
+                                    Text(" ${userData['Company Name'] ?? 'N/A'}",
+                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
                                   ],
                                 ),
                               ),
