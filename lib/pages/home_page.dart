@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Container(
                               child:Image.network(
-                                '${userData['pic_Url'] ?? 'N/A'}',height: 40,
+                                "${userData['pic_url']}",height: 40,
                                 loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                                   if (loadingProgress == null)
                                     return child;
@@ -208,7 +208,8 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     Text(" ${userData['Name'] ?? 'N/A'}",
                                     style: TextStyle(fontWeight: FontWeight.w700,fontSize: 32)),
-                                    Divider(thickness: 2),
+                                    // Divider(thickness: 2),
+                                    Divider(thickness: 1,color: Colors.orange,),
                                     Text(" ${userData['Company Name'] ?? 'N/A'}",
                                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
                                   ],
