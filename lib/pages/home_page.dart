@@ -184,20 +184,25 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           children: [
                             Container(
-                              child:Image.network(
-                                "${userData['pic_url']}",height: 40,
-                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null)
-                                    return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              )
+                              margin: EdgeInsets.only(right: 20),
+                              padding: EdgeInsets.only(left: 40, top: 20),
+                              child: ClipOval(
+                                child: Image.network(
+                                  "${userData['pic_url']}",
+                                  height: 50,
+                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                    if (loadingProgress == null)
+                                      return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(10.0),
