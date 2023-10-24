@@ -105,7 +105,6 @@ class _HomePageState extends State<HomePage> {
       height: 230,
       width: 1000,
       decoration: BoxDecoration(
-        color: Colors.grey[350],
         borderRadius: BorderRadius.circular(15),
         border: Border.all(width: 2.0, color: Colors.white),
         boxShadow: [
@@ -122,6 +121,11 @@ class _HomePageState extends State<HomePage> {
             spreadRadius: 1.0,
           ),
         ],
+        image: DecorationImage(
+          image: AssetImage(
+              'lib/images/backgroung.jpg'), // Replace with the path to your image asset
+          fit: BoxFit.cover,
+        ),
       ),
       child: Center(
         child: Column(
@@ -314,54 +318,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _recivedCardsList() {
-  return Padding(
-    padding: const EdgeInsets.all(10.0),
-    child: ListView.builder(
-      itemCount: recivedData.length,
-      itemBuilder: (context, index) {
-        final cardData = recivedData[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16.0), // Add margin between containers
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.white, // Background color for each user container
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade500,
-                offset: const Offset(4.0, 4.0),
-                blurRadius: 15.0,
-                spreadRadius: 1.0,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ListView.builder(
+        itemCount: recivedData.length,
+        itemBuilder: (context, index) {
+          final cardData = recivedData[index];
+          return Container(
+            margin: const EdgeInsets.only(
+                bottom: 16.0), // Add margin between containers
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color:
+                  Colors.white70, // Background color for each user container
+              borderRadius: BorderRadius.circular(15),
+              // boxShadow: [
+              //   BoxShadow(
+              //     color: Colors.grey.shade500,
+              //     offset: const Offset(4.0, 4.0),
+              //     blurRadius: 15.0,
+              //     spreadRadius: 1.0,
+              //   ),
+              //   const BoxShadow(
+              //     color: Colors.white,
+              //     offset: Offset(-4.0, -4.0),
+              //     blurRadius: 15.0,
+              //     spreadRadius: 1.0,
+              //   ),
+              // ],
+            ),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(cardData['pic_url'] ?? '[]'),
               ),
-              const BoxShadow(
-              color: Colors.white,
-              offset: Offset(-4.0, -4.0),
-              blurRadius: 15.0,
-              spreadRadius: 1.0,
+              title: Text(cardData['Name'] ?? 'N/A'),
+              subtitle: Text(cardData['Company Name'] ?? '[]'),
+              // Add more details here if needed
             ),
-            ],
-          ),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(cardData['pic_url']),
-            ),
-            title: Text(cardData['Name']),
-            subtitle: Text(cardData['Company Name']),
-            // Add more details here if needed
-          ),
-        );
-      },
-    ),
-  );
-
-
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[600],
+        backgroundColor: Colors.amber[400], // #FFA3FD
         actions: [
           IconButton(
             onPressed: signUserOut,
@@ -369,27 +373,29 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.amber[50], // #191825
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildUserData(), // Display user data
-            const SizedBox(height: 20), // Add spacing between user data and received cards
-            const Text(
-              'Received Cards',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildUserData(), // Display user data
+              const SizedBox(
+                  height:
+                      20), // Add spacing between user data and received cards
+              Text(
+                'Received Cards',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            Expanded(
-              child: _recivedCardsList(), // Display the received cards list
-            ),
-          ],
-        ),
+              Expanded(
+                child: _recivedCardsList(), // Display the received cards list
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -402,7 +408,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.grey[600], // Change the FAB's background color
+        backgroundColor: Color(0xFF865DFF), // #865DFF
       ),
     );
   }
