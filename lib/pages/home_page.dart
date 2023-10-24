@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> {
       print("Error: $e");
     }
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -178,27 +179,39 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                          // Text("Address: ${userData['Company Name'] ?? 'N/A'}"),
-                      child:Column(
-                        children:[
+                      child: Column(
+                        children: [
                         Row(
                           children: [
-                            Container(
-                              child:Image.network(
-                                '${userData['pic_Url'] ?? 'N/A'}',height: 40,
-                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                  if (loadingProgress == null)
-                                    return child;
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: ClipOval(
+                                  child: Image.network(
+                                '${user.photoURL}',
+                                height: 40,
+                                errorBuilder: (context,error,stackTrace)
+                                {
+                                  return Image.asset('lib/images/default_avatar.png',height: 40,);
+                                },
+                                loadingBuilder: (BuildContext context,
+                                    Widget child,
+                                    ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null) return child;
                                   return Center(
                                     child: CircularProgressIndicator(
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                      value: loadingProgress.expectedTotalBytes !=
+                                              null
+                                          ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress.expectedTotalBytes!
                                           : null,
                                     ),
                                   );
                                 },
-                              )
+                              )),
                             ),
+
+                            const SizedBox(width: 60,),
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Container(
@@ -207,10 +220,14 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
                                     Text(" ${userData['Name'] ?? 'N/A'}",
-                                    style: TextStyle(fontWeight: FontWeight.w700,fontSize: 32)),
-                                    Divider(thickness: 2),
-                                    Text(" ${userData['Company Name'] ?? 'N/A'}",
-                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 32)),
+                                    Text(
+                                        " ${userData['Company Name'] ?? 'N/A'}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18)),
                                   ],
                                 ),
                               ),
@@ -218,61 +235,66 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         Container(
-                        margin: EdgeInsets.only(top: 30, left: 10),
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.call,
-                                  size: 20,
-                                ),
-                                Text(
-                                  " ${userData['Phone'] ?? 'N/A'}",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 3,),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.email_outlined,
-                                  size: 20,
-                                ),
-                                Text(
-                                  " ${userData['Email'] ?? 'N/A'}",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 3,),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.location_on_outlined,
-                                  size: 20,
-                                ),
-                                Flexible(child:Text(
-                                  " ${userData['Address'] ?? 'N/A'}",
-                                  softWrap: true,
-                                  overflow: TextOverflow
-                                      .ellipsis, // Specify how to handle overflow
-                                  maxLines: 2,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ), )
-                              ],
-                            ),
-                          ],
-                          
-                        ),
-                      )
-                       ]
-                      )
-                      
-                      ),
+                          margin: EdgeInsets.only(top: 45, left: 10),
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.call,
+                                    size: 20,
+                                  ),
+                                  Text(
+                                    " ${userData['Phone'] ?? 'N/A'}",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.email_outlined,
+                                    size: 20,
+                                  ),
+                                  Text(
+                                    " ${userData['Email'] ?? 'N/A'}",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 3,
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    size: 20,
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      " ${userData['Address'] ?? 'N/A'}",
+                                      softWrap: true,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Specify how to handle overflow
+                                      maxLines: 2,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        )
+                      ])),
                 // Add more text widgets to display other card details
               ],
             ),
