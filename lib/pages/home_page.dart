@@ -314,20 +314,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _recivedCardsList() {
-    return ListView.builder(
-    itemCount: recivedData.length,
-    itemBuilder: (context, index) {
-      final cardData = recivedData[index];
-      return ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(cardData['pic_url']),
-        ),
-        title: Text(cardData['Name']),
-        subtitle: Text(cardData['Company Name']),
-        // Add more details here if needed
-      );
-    },
+  return Padding(
+    padding: const EdgeInsets.all(10.0),
+    child: ListView.builder(
+      itemCount: recivedData.length,
+      itemBuilder: (context, index) {
+        final cardData = recivedData[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16.0), // Add margin between containers
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.white, // Background color for each user container
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade500,
+                offset: const Offset(4.0, 4.0),
+                blurRadius: 15.0,
+                spreadRadius: 1.0,
+              ),
+              const BoxShadow(
+              color: Colors.white,
+              offset: Offset(-4.0, -4.0),
+              blurRadius: 15.0,
+              spreadRadius: 1.0,
+            ),
+            ],
+          ),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(cardData['pic_url']),
+            ),
+            title: Text(cardData['Name']),
+            subtitle: Text(cardData['Company Name']),
+            // Add more details here if needed
+          ),
+        );
+      },
+    ),
   );
+
+
   }
 
   @override
