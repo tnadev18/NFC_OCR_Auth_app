@@ -62,6 +62,7 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final myCard = data['my_card'];
+        final recivedCards = data[''];
         if (myCard != null) {
           setState(() {
             userData = myCard;
@@ -220,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 55, left: 10),
+                    margin: EdgeInsets.only(top: 50, left: 10),
                     padding: EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
