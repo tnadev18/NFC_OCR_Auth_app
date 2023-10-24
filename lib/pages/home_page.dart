@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchUserData();
-    dataRefreshTimer = Timer.periodic(Duration(seconds: 1000), (Timer timer) {
+    dataRefreshTimer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
       fetchUserData(); // Fetch data periodically
     });
     registerData().then((message) {
