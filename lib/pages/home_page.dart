@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// import 'package:image/image.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -157,10 +159,47 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                      // Text("Address: ${userData['Company Name'] ?? 'N/A'}"),
-
-                      child: Container(
-                        margin: EdgeInsets.only(top: 120, left: 10),
+                          // Text("Address: ${userData['Company Name'] ?? 'N/A'}"),
+                      child:Column(
+                        children:[
+                        Row(
+                          children: [
+                            Container(
+                              child:Image.network(
+                                '${userData['pic_Url'] ?? 'N/A'}',height: 40,
+                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                  if (loadingProgress == null)
+                                    return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                          : null,
+                                    ),
+                                  );
+                                },
+                              )
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                alignment: Alignment.topRight,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(" ${userData['Name'] ?? 'N/A'}",
+                                    style: TextStyle(fontWeight: FontWeight.w700,fontSize: 32)),
+                                    Divider(thickness: 2),
+                                    Text(" ${userData['Company Name'] ?? 'N/A'}",
+                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                        margin: EdgeInsets.only(top: 30, left: 10),
                         padding: EdgeInsets.all(10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,14 +244,16 @@ class _HomePageState extends State<HomePage> {
                                   maxLines: 2,
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ), )
-                                
                               ],
                             ),
                           ],
-                          // Text("Address: ${userData['Company Name'] ?? 'N/A'}"),
-                          // Text("Address: ${userData['Name'] ?? 'N/A'}"),
+                          
                         ),
-                      )),
+                      )
+                       ]
+                      )
+                      
+                      ),
                 // Add more text widgets to display other card details
               ],
             ),

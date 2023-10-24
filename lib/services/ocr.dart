@@ -331,6 +331,7 @@ void saveDataToAPI() async {
       "Email": emailController.text,
       "Name": nameController.text,
       "Phone": phoneController.text,
+      "pic_url": user.photoURL,
     },
   };
 
