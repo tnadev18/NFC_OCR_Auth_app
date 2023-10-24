@@ -365,7 +365,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.amber[400], // #FFA3FD
+        backgroundColor: Colors.white10, // #FFA3FD
         actions: [
           IconButton(
             onPressed: signUserOut,
