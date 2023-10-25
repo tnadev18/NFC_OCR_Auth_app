@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:auth/services/ocr.dart';
+import 'package:auth/services/qr_generator.dart';
+import 'package:auth/services/scan_qr.dart';
+import 'package:auth/services/temp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +12,7 @@ import 'dart:async';
 import 'package:auth/services/nfc.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,6 +27,10 @@ class _HomePageState extends State<HomePage> {
 
   ValueNotifier<dynamic> result = ValueNotifier(null);
   String ndefData = 'NDEF data will be displayed here';
+
+  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? _controller;
+  String? _scannedData;
 
   // dynamic resultValue = result.value;
 
@@ -159,20 +166,19 @@ class _HomePageState extends State<HomePage> {
           if (ndefData1 != null &&
               ndefData1.contains("getcode-eight.vercel.app/")) {
             // Remove the prefix
-            ndefData1 = ndefData1.substring("getcode-eight.vercel.app/".length);
+            ndefData1 = ndefData1.substring("getcode-eight.vercel.app/".length+1);
             print("************************" + ndefData1);
-          }
-          else{
+          } else {
             Fluttertoast.showToast(
-          msg: "Invalid Card",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-          }          
+              msg: "Invalid Card",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
           addCard(ndefData1);
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -218,11 +224,20 @@ class _HomePageState extends State<HomePage> {
           fontSize: 16.0,
         );
       } else {
-        print("Failed to load data") ;
+        print("Failed to load data");
       }
     } catch (e) {
-      print("Failed to load data: $e") ;
+      print("Failed to load data: $e");
     }
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this._controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        _scannedData = scanData.code;
+      });
+    });
   }
 
   Widget _buildUserData() {
@@ -543,7 +558,11 @@ class _HomePageState extends State<HomePage> {
                           title: Text('QR'),
                           onTap: () {
                             // Handle Button 1 logic
-                            Navigator.pop(context);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) {
+                                return QRGenerate();
+                              }),
+                            );
                           },
                         ),
                         ListTile(
@@ -592,8 +611,12 @@ class _HomePageState extends State<HomePage> {
                           leading: Icon(Icons.qr_code_scanner),
                           title: Text('QR Scanner'),
                           onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) {
+                                return QR();
+                              }),
+                            );
                             // Handle Button 2 logic
-                            Navigator.pop(context);
                           },
                         ),
                       ],
