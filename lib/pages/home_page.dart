@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:auth/services/nfc.dart';
+import 'package:nfc_manager/nfc_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,6 +21,11 @@ class _HomePageState extends State<HomePage> {
   Map<String, dynamic> userData = {};
   List<dynamic> recivedData = [];
   late Timer dataRefreshTimer;
+
+  ValueNotifier<dynamic> result = ValueNotifier(null);
+  String ndefData = 'NDEF data will be displayed here';
+
+  // dynamic resultValue = result.value;
 
   @override
   void initState() {
@@ -98,6 +106,123 @@ class _HomePageState extends State<HomePage> {
         return AddUserCard();
       }),
     );
+  }
+
+  Future<String> fetchData(String data) async {
+    final url =
+        Uri.parse('https://getcode-ndef-api.vercel.app/convert?data=${data}');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String message = data['textData'];
+        return message;
+      } else {
+        return "Failed to load data";
+      }
+    } catch (e) {
+      return "Failed to load data: $e";
+    }
+  }
+
+  void _tagRead() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Reading NDEF Data'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(), // Display a loading indicator
+              SizedBox(height: 16),
+              Text('Please hold the NFC card near the device.'),
+            ],
+          ),
+        );
+      },
+    );
+
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+      Ndef? ndef = Ndef.from(tag);
+      if (ndef != null) {
+        try {
+          NdefMessage message = await ndef.read();
+          setState(() {
+            ndefData = 'NDEF Data: $message';
+          });
+
+          String? ndefData1 = await fetchData(tag.data.toString());
+          result.value = ndefData1;
+          // print("************************"+result.value);
+          if (ndefData1 != null &&
+              ndefData1.contains("getcode-eight.vercel.app/")) {
+            // Remove the prefix
+            ndefData1 = ndefData1.substring("getcode-eight.vercel.app/".length);
+            print("************************" + ndefData1);
+          }
+          else{
+            Fluttertoast.showToast(
+          msg: "Invalid Card",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+          }          
+          addCard(ndefData1);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Card Read Successfully.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } catch (e) {
+          setState(() {
+            ndefData = 'Error reading NDEF data: $e';
+          });
+        } finally {
+          Navigator.of(context).pop(); // Close the reading dialog
+        }
+      } else {
+        setState(() {
+          ndefData = 'NDEF not supported on this tag';
+        });
+        Navigator.of(context).pop(); // Close the reading dialog
+      }
+      NfcManager.instance.stopSession();
+    });
+  }
+
+  Future<void> addCard(String data) async {
+    final url = Uri.parse(
+        'https://getcode-ndef-api.vercel.app/store_shared_car?shared_by_uid=${data}&recieved_by_uid=${user.uid}');
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        String message = data['message'];
+        print(message);
+        Fluttertoast.showToast(
+          msg: message,
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else {
+        print("Failed to load data") ;
+      }
+    } catch (e) {
+      print("Failed to load data: $e") ;
+    }
   }
 
   Widget _buildUserData() {
@@ -329,8 +454,7 @@ class _HomePageState extends State<HomePage> {
                 bottom: 16.0), // Add margin between containers
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color:
-                  Colors.white70, // Background color for each user container
+              color: Colors.white70, // Background color for each user container
               borderRadius: BorderRadius.circular(15),
               // boxShadow: [
               //   BoxShadow(
@@ -365,7 +489,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white10, // #FFA3FD
+        backgroundColor: Colors.orange[400], // #FFA3FD
         actions: [
           IconButton(
             onPressed: signUserOut,
@@ -373,7 +497,7 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      backgroundColor: Colors.amber[50], // #191825
+      backgroundColor: Colors.yellow[100], // #191825
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -398,18 +522,140 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) {
-              return Nfc(); // Replace with the actual name of your NFC page
-            }),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Color(0xFF865DFF), // #865DFF
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            child: FloatingActionButton(
+              onPressed: () {
+                // Show the modal bottom sheet with two buttons
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.qr_code),
+                          title: Text('QR'),
+                          onTap: () {
+                            // Handle Button 1 logic
+                            Navigator.pop(context);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.link),
+                          title: Text('Link'),
+                          onTap: () {
+                            // Handle Button 2 logic
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              tooltip: 'Send',
+              child: Icon(Icons.send),
+              elevation: 6,
+              highlightElevation: 12,
+              disabledElevation: 0,
+              backgroundColor: Colors.orange[400],
+            ),
+          ),
+          SizedBox(width: 100),
+          Container(
+            width: 70,
+            height: 70,
+            child: FloatingActionButton(
+              onPressed: () {
+                // Show the modal bottom sheet with two buttons
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.connect_without_contact),
+                          title: Text('NFC Tag'),
+                          onTap: () {
+                            // Handle Button 1 logic
+                            _tagRead();
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.qr_code_scanner),
+                          title: Text('QR Scanner'),
+                          onTap: () {
+                            // Handle Button 2 logic
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              tooltip: 'Receive',
+              child: Icon(Icons.download),
+              elevation: 6,
+              highlightElevation: 12,
+              disabledElevation: 0,
+              backgroundColor: Colors.orange[400],
+            ),
+          ),
+        ],
       ),
+      bottomNavigationBar: SizedBox(height: 50),
     );
   }
 }
+
+
+
+
+// floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+//       floatingActionButton: Row(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Container(
+//             width: 70, // Set the width to 40
+//             height: 70, // Set the height to 40
+//             child: FloatingActionButton(
+//               onPressed: () {
+//                 // Add your logic for the "Send" button here
+//               },
+//               tooltip: 'Send',
+//               child: Icon(Icons.send),
+//               elevation: 6,
+//               highlightElevation: 12,
+//               disabledElevation: 0,
+//               mini: false,
+//               backgroundColor: Colors.orange[400],
+//             ),
+//           ),
+//           SizedBox(width: 100), // Adjust the spacing between the buttons
+//           Container(
+//             width: 70, // Set the width to 40
+//             height: 70, // Set the height to 40
+//             child: FloatingActionButton(
+//               onPressed: () {
+//                 // Add your logic for the "Receive" button here
+//               },
+//               tooltip: 'Receive',
+//               child: Icon(Icons.download),
+//               elevation: 6,
+//               highlightElevation: 12,
+//               disabledElevation: 0,
+//               backgroundColor: Colors.orange[400],
+//             ),
+//           ),
+//         ],
+//       ),
+//       bottomNavigationBar: SizedBox(height: 50), // Add a SizedBox for spacing
+//     );
