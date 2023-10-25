@@ -1,18 +1,17 @@
 import 'dart:ui';
-
 import 'package:auth/services/ocr.dart';
 import 'package:auth/services/qr_generator.dart';
 import 'package:auth/services/scan_qr.dart';
-import 'package:auth/services/temp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:auth/services/nfc.dart';
+import 'package:image/image.dart' as img;
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,10 +26,6 @@ class _HomePageState extends State<HomePage> {
 
   ValueNotifier<dynamic> result = ValueNotifier(null);
   String ndefData = 'NDEF data will be displayed here';
-
-  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? _controller;
-  String? _scannedData;
 
   // dynamic resultValue = result.value;
 
@@ -137,7 +132,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           title: Text('Reading NDEF Data'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -166,7 +161,8 @@ class _HomePageState extends State<HomePage> {
           if (ndefData1 != null &&
               ndefData1.contains("getcode-eight.vercel.app/")) {
             // Remove the prefix
-            ndefData1 = ndefData1.substring("getcode-eight.vercel.app/".length+1);
+            ndefData1 =
+                ndefData1.substring("getcode-eight.vercel.app/".length + 1);
             print("************************" + ndefData1);
           } else {
             Fluttertoast.showToast(
@@ -231,13 +227,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    this._controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        _scannedData = scanData.code;
-      });
-    });
+  void _shareLink() {
+    Share.share('https://getcode-eight.vercel.app/${user.uid}');
   }
 
   Widget _buildUserData() {
@@ -261,14 +252,14 @@ class _HomePageState extends State<HomePage> {
             spreadRadius: 1.0,
           ),
         ],
-        image: DecorationImage(
+        image: const DecorationImage(
           image: AssetImage(
               'lib/images/backgroung.jpg'), // Replace with the path to your image asset
           fit: BoxFit.cover,
         ),
       ),
       child: Center(
-        child: Column(
+        child: Stack(
           children: [
             if (userData.isEmpty)
               Container(
@@ -451,6 +442,29 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
+            const SizedBox(height: 35),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Container(
+                height: 25,
+                width: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                      25), // Adjust the radius to make the corners rounder
+                ),
+                child: ElevatedButton(
+                  onPressed: addUserCard,
+                  child: Text(
+                    'Edit',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        Colors.orange), // Set the background color to orange
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -471,20 +485,6 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               color: Colors.white70, // Background color for each user container
               borderRadius: BorderRadius.circular(15),
-              // boxShadow: [
-              //   BoxShadow(
-              //     color: Colors.grey.shade500,
-              //     offset: const Offset(4.0, 4.0),
-              //     blurRadius: 15.0,
-              //     spreadRadius: 1.0,
-              //   ),
-              //   const BoxShadow(
-              //     color: Colors.white,
-              //     offset: Offset(-4.0, -4.0),
-              //     blurRadius: 15.0,
-              //     spreadRadius: 1.0,
-              //   ),
-              // ],
             ),
             child: ListTile(
               leading: CircleAvatar(
@@ -504,6 +504,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: Text('GET CODE'),
         backgroundColor: Colors.orange[400], // #FFA3FD
         actions: [
           IconButton(
@@ -523,7 +524,7 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(
                   height:
                       20), // Add spacing between user data and received cards
-              Text(
+              const Text(
                 'Received Cards',
                 style: TextStyle(
                   fontSize: 20,
@@ -569,8 +570,7 @@ class _HomePageState extends State<HomePage> {
                           leading: Icon(Icons.link),
                           title: Text('Link'),
                           onTap: () {
-                            // Handle Button 2 logic
-                            Navigator.pop(context);
+                            _shareLink();
                           },
                         ),
                       ],
@@ -638,47 +638,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-
-
-// floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//       floatingActionButton: Row(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Container(
-//             width: 70, // Set the width to 40
-//             height: 70, // Set the height to 40
-//             child: FloatingActionButton(
-//               onPressed: () {
-//                 // Add your logic for the "Send" button here
-//               },
-//               tooltip: 'Send',
-//               child: Icon(Icons.send),
-//               elevation: 6,
-//               highlightElevation: 12,
-//               disabledElevation: 0,
-//               mini: false,
-//               backgroundColor: Colors.orange[400],
-//             ),
-//           ),
-//           SizedBox(width: 100), // Adjust the spacing between the buttons
-//           Container(
-//             width: 70, // Set the width to 40
-//             height: 70, // Set the height to 40
-//             child: FloatingActionButton(
-//               onPressed: () {
-//                 // Add your logic for the "Receive" button here
-//               },
-//               tooltip: 'Receive',
-//               child: Icon(Icons.download),
-//               elevation: 6,
-//               highlightElevation: 12,
-//               disabledElevation: 0,
-//               backgroundColor: Colors.orange[400],
-//             ),
-//           ),
-//         ],
-//       ),
-//       bottomNavigationBar: SizedBox(height: 50), // Add a SizedBox for spacing
-//     );

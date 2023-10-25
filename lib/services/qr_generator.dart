@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QRGenerate extends StatelessWidget {
   const QRGenerate({Key? key}) : super(key: key);
@@ -19,20 +19,31 @@ class QRCodeGenerator extends StatefulWidget {
 }
 
 class _QRCodeGeneratorState extends State<QRCodeGenerator> {
-  String initialUrl = 'https://example.com';
+  final user = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
-    return QrImage(
-            data: initialUrl,
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          color: Colors.white, // Set the background color to white
+          alignment: Alignment.center,
+          child: QrImageView(
             padding: const EdgeInsets.all(0),
-            // embeddedImage: const AssetImage('assets/icon.png'),
+            data:'https://getcode-eight.vercel.app/${user.uid}',
+            gapless: true,
+            size: 320,
+            embeddedImage: AssetImage(''),
             embeddedImageStyle: QrEmbeddedImageStyle(
-              size: const Size(50, 50),
+              size: Size(80, 80),
             ),
             eyeStyle: const QrEyeStyle(
-              eyeShape: QrEyeShape.circle,
+              eyeShape: QrEyeShape.square,
               color: Colors.black,
             ),
-          );,
+          ),
+        ),
+      ),
+    );
+  }
 }
