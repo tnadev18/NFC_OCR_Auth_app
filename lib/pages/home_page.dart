@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:auth/pages/userdetails.dart';
 import 'package:auth/services/ocr.dart';
 import 'package:auth/services/qr_generator.dart';
 import 'package:auth/services/scan_qr.dart';
@@ -472,18 +473,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _recivedCardsList() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ListView.builder(
-        itemCount: recivedData.length,
-        itemBuilder: (context, index) {
-          final cardData = recivedData[index];
-          return Container(
-            margin: const EdgeInsets.only(
-                bottom: 16.0), // Add margin between containers
+  return Padding(
+    padding: const EdgeInsets.all(10.0),
+    child: ListView.builder(
+      itemCount: recivedData.length,
+      itemBuilder: (context, index) {
+        final cardData = recivedData[index];
+        return GestureDetector(
+          onTap: () {
+            // Navigate to a new page for the selected user here
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => UserDetails(data: cardData),
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16.0),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.white70, // Background color for each user container
+              color: Colors.white70,
               borderRadius: BorderRadius.circular(15),
             ),
             child: ListTile(
@@ -492,13 +501,14 @@ class _HomePageState extends State<HomePage> {
               ),
               title: Text(cardData['Name'] ?? 'N/A'),
               subtitle: Text(cardData['Company Name'] ?? '[]'),
-              // Add more details here if needed
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
