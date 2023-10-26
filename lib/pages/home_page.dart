@@ -264,7 +264,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             if (userData.isEmpty)
               Container(
-                margin: EdgeInsets.symmetric(vertical: 70),
+                margin: EdgeInsets.symmetric(vertical: 70,horizontal: 130.0),
                 child: Column(
                   children: [
                     IconButton(
